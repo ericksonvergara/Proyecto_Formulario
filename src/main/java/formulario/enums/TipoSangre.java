@@ -1,7 +1,6 @@
-package src.main.java.formulario;
+package src.main.java.formulario.enums;
 
 public enum TipoSangre {
-
     A_POSITIVO("A+"),
     A_NEGATIVO("A-"),
     B_POSITIVO("B+"),

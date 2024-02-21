@@ -1,142 +1,259 @@
 package src.main.java.formulario;
 
+import src.main.java.formulario.enums.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 import java.util.regex.Pattern;
 
 public class Formulario {
-
-    public static void registro(String[] args){
+    public static void registro() {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("------REGISTRO DE USUARIOS-----");
+        System.out.println("----------------REGISTRO DE USUARIOS---------------");
 
-        System.out.println("Ingrese su nombre:");
-        String nombre = sc.nextLine();
+        String nombre = validarCampo(sc, "nombre");
 
-        System.out.println("Ingrese su apellido:");
-        String apellido = sc.nextLine();
+        String apellido = validarCampo(sc, "apellido");
 
-//        System.out.println("Seleccione el tipo de documento:");
-        imprimirTipoDoc();
-        int opcion = sc.nextInt();
-
-        sc.nextLine();
+        TipoDocumento tipoDocumento = imprimirTipoDoc(sc);
 
         boolean numDocumentoValido = false;
+        String numDocumento;
         do {
             System.out.println("Digite el número de documento:");
-            String numDocumento = sc.nextLine();
-            if(!validarCampo(numDocumento, "\\d{1,10}")){
+            numDocumento = sc.nextLine();
+            if (!validarCampo(numDocumento, "\\d{1,10}")) {
                 System.out.println("El número de documento ingresado es inválido. \nDebe contener solo dígitos y tener máximo 10 caracteres.");
-            }else {
+            } else {
                 numDocumentoValido = true;
             }
         } while (!numDocumentoValido);
 
-
-        System.out.println("Ingrese su fecha de nacimiento en formato dd/MM/yyyy:");
+        System.out.println("\nIngrese su fecha de nacimiento en formato dd/MM/yyyy:");
         Date fechaNacimiento = solicitarFecha(sc);
 
-        System.out.println("Digite su genero");
-        String genero = sc.nextLine();
+        String direccion = validarCampo(sc, "direccion");
 
-        System.out.println("Ingrese su dirección de domicilio:");
-        String direccion = sc.nextLine();
+        String email = validarEmail(sc);
 
-        System.out.println("Ingrese su correo electronico:");
-        String email = sc.nextLine();
+        Genero genero = imprimirGeneros(sc);
 
         boolean telefonoValido = false;
+        String telefono;
         do {
             System.out.println("numero de Telefono:");
-            String telefono = sc.nextLine();
-            if (!validarCampo(telefono, "\\d{1,10}")){
+            telefono = sc.nextLine();
+            if (!validarCampo(telefono, "\\d{1,10}")) {
                 System.out.println("El número de teléfono ingresado es inválido. \nDebe contener solo dígitos y tener máximo 10 caracteres.");
-            }else {
+            } else {
                 telefonoValido = true;
             }
-        }while (!telefonoValido);
+        } while (!telefonoValido);
 
         String pais = "Colombia";
-        System.out.println("Pais: \n" + pais);
+        System.out.println("\nPais: \n" + pais);
 
-        System.out.println("Departamento");
-        String dpto = sc.nextLine();
+        String dpto = validarCampo(sc, "departamento");
 
-        System.out.println("Ciudad");
-        String ciudad = sc.nextLine();
+        String ciudad = validarCampo(sc, "ciudad");
 
-//        System.out.println("Seleccione el nivel de escolaridad");
-        imprimirNivelAcademico();
-        int nivelAcademico = sc.nextInt();
+        NivelAcademico nivelAcademico = imprimirNivelAcademico(sc);
 
-        imprimirTipoSangre();
-        int tipoSangre = sc.nextInt();
+        TipoSangre tipoSangre = imprimirTipoSangre(sc);
 
-        System.out.println("Digite su EPS o ARS:");
-        String eps = sc.nextLine();
+        String eps = validarCampo(sc, "Eps");
 
-        System.out.println("Caja de compensación:");
-        String caja = sc.nextLine();
+        String caja = validarCampo(sc, "caja de compensación");
 
-        imprimirFondoPension();
-        int pension = sc.nextInt();
+        Pension pension = imprimirFondoPension(sc);
+
+        Cesantias cesantias = imprimirCesantia(sc);
+
+        System.out.println("¡SUS DATOS HAN SIDO REGISTRADOS SATISFACTORIAMENTE!.\n");
+
+        mostrarDatosRegistrados(nombre, apellido, tipoDocumento.getNombreDoc(), numDocumento, fechaNacimiento, direccion, email, genero.getGenero(),
+                telefono, pais, dpto, ciudad, nivelAcademico.getNivelAcademico(), tipoSangre.getTipoSangre(), eps, caja, pension.getPension(), cesantias.getCesantias());
     }
 
-    public static void imprimirTipoDoc(){
-        System.out.println("Seleccione el tipo de documento:");
-        for (int i = 1; i  < TipoDocumento.values().length; i++){
-            System.out.println(i + ". "+TipoDocumento.values()[i].getNombreDoc());
+    public static TipoDocumento imprimirTipoDoc(Scanner sc) {
+        System.out.println("\nSeleccione el tipo de documento:");
+        TipoDocumento[] tipoDocumentos = TipoDocumento.values();
+        for (int i = 0; i < TipoDocumento.values().length; i++) {
+            System.out.println((i + 1) + ". " + TipoDocumento.values()[i].getNombreDoc());
         }
+        int opcion = 0;
+        do {
+            String input = sc.nextLine();
+            if (!input.matches("\\d+")) {
+                System.out.println("Por favor, ingrese una opción valida.");
+                continue;
+            }
+            opcion = Integer.parseInt(input);
+            System.out.println((opcion < 1 || opcion > tipoDocumentos.length) ? "Por favor, ingrese una opción válida." : "");
+        } while (opcion < 1 || opcion > tipoDocumentos.length);
+        return tipoDocumentos[opcion - 1];
     }
-
-    public static void imprimirNivelAcademico(){
-        System.out.println("Seleccione el nivel academico:");
-        for (int i = 1; i < NivelAcademico.values().length; i++) {
-            System.out.println(i+". "+NivelAcademico.values()[i].getNivelAcademico());
+    public static Genero imprimirGeneros(Scanner sc) {
+        System.out.println("\nSeleccione el tipo de genero: ");
+        Genero[] genero = Genero.values();
+        for (int i = 0; i < Genero.values().length; i++) {
+            System.out.println((i + 1) + ". " + Genero.values()[i].getGenero());
         }
+        int opcion = 0;
+        do {
+            String input = sc.nextLine();
+            if (!input.matches("\\d+")) {
+                System.out.println("Por favor, ingrese una opción valida.");
+                continue;
+            }
+            opcion = Integer.parseInt(input);
+            System.out.println((opcion < 1 || opcion > genero.length) ? "Por favor, ingrese una opción valida." : "");
+        } while (opcion < 1 || opcion > genero.length);
+        return genero[opcion -1];
     }
-
-    public static void imprimirTipoSangre(){
+    public static NivelAcademico imprimirNivelAcademico(Scanner sc) {
+        System.out.println("\nSeleccione el nivel academico:");
+        NivelAcademico[] nivelAcademico = NivelAcademico.values();
+        for (int i = 0; i < NivelAcademico.values().length; i++) {
+            System.out.println((i + 1) + ". " + NivelAcademico.values()[i].getNivelAcademico());
+        }
+        int opcion = 0;
+        do {
+            String input = sc.nextLine();
+            if (!input.matches("\\d+")) {
+                System.out.println("Por favor, ingrese una opción valida.");
+                continue;
+            }
+            opcion = Integer.parseInt(input);
+            System.out.println((opcion < 1 || opcion > nivelAcademico.length) ? "Por favor, ingrese una opción valida." : "");
+        } while (opcion < 1 || opcion > nivelAcademico.length);
+        return nivelAcademico[opcion -1];
+    }
+    public static TipoSangre imprimirTipoSangre(Scanner sc) {
         System.out.println("Seleccione su tipo de sangre:");
-        for (int i = 1; i < TipoSangre.values().length; i++) {
-            System.out.println(i+". "+TipoSangre.values()[i].getTipoSangre());
-
+        TipoSangre[] tipoSangre = TipoSangre.values();
+        for (int i = 0; i < TipoSangre.values().length; i++) {
+            System.out.println((i + 1) + ". " + TipoSangre.values()[i].getTipoSangre());
         }
+        int opcion = 0;
+        do {
+            String input = sc.nextLine();
+            if (!input.matches("\\d+")) {
+                System.out.println("Por favor, ingrese una opción valida.");
+                continue;
+            }
+            opcion = Integer.parseInt(input);
+            System.out.println((opcion < 1 || opcion > tipoSangre.length) ? "Por favor, ingrese una opción valida." : "");
+        } while (opcion < 1 || opcion > tipoSangre.length);
+        return tipoSangre[opcion -1];
     }
-
-    public static void imprimirFondoPension() {
-        System.out.println("Seleccione su fondo de pension");
-        for (int i = 1; i < Pension.values().length; i++) {
-            System.out.println(i+". "+Pension.values()[i].getPension());
+    public static Pension imprimirFondoPension(Scanner sc) {
+        System.out.println("\nSeleccione su fondo de pension");
+        Pension[] pension = Pension.values();
+        for (int i = 0; i < Pension.values().length; i++) {
+            System.out.println((i + 1) + ". " + Pension.values()[i].getPension());
         }
+        int opcion = 0;
+        do {
+            String input = sc.nextLine();
+            if (!input.matches("\\d+")) {
+                System.out.println("Por favor, ingrese una opción valida.");
+                continue;
+            }
+            opcion = Integer.parseInt(input);
+            System.out.println((opcion < 1 || opcion > pension.length) ? "Por favor, ingrese una opción valida." : "");
+        } while (opcion < 1 || opcion > pension.length);
+        return pension[opcion -1];
     }
-    public static Date solicitarFecha(Scanner sc){
+    public static Cesantias imprimirCesantia(Scanner sc) {
+        System.out.println("Seleccione su fondo de cesantias:");
+        Cesantias[] cesantias = Cesantias.values();
+        for (int i = 0; i < Cesantias.values().length; i++) {
+            System.out.println((i + 1) + ". " + Cesantias.values()[i].getCesantias());
+        }
+        int opcion = 0;
+        do {
+            String input = sc.nextLine();
+            if (!input.matches("\\d+")) {
+                System.out.println("Por favor, ingrese una opción valida.");
+                continue;
+            }
+            opcion = Integer.parseInt(input);
+            System.out.println((opcion < 1 || opcion > cesantias.length) ? "Por favor, ingrese una opción valida." : "");
+        } while (opcion < 1 || opcion > cesantias.length);
+        return cesantias[opcion -1];
+    }
+    public static Date solicitarFecha(Scanner sc) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
         Date fecha = null;
-
         boolean fechaValida = false;
-        while (!fechaValida){
+        while (!fechaValida) {
             String fechaString = sc.nextLine();
             try {
                 fecha = dateFormat.parse(fechaString);
                 fechaValida = true;
-            } catch (ParseException e){
-                System.out.println("Error: Formato de fecha invalido!. Ingrese nuevamente");
+            } catch (ParseException e) {
+                System.out.println("Error: Formato de fecha invalido!. Ingrese la fecha nuevamente");
             }
         }
         return fecha;
     }
-
-//    public static boolean validarNumDocumento(String numDocumento){
-//        return Pattern.matches("\\d{1,10}", numDocumento);
-//    }
-
     public static boolean validarCampo(String campo, String patron) {
         return Pattern.matches(patron, campo);
     }
+    public static String validarCampo(Scanner sc, String campo) {
+        String valor;
+        do {
+            System.out.println("\nIngrese su " + campo + ":");
+            valor = sc.nextLine();
+            if (valor.isEmpty()) {
+                System.out.println("El campo " + campo + " no puede estar vacío.");
+            }
+        } while (valor.isEmpty());
+        return valor;
+    }
+    public static String validarEmail(Scanner sc) {
+        String email;
+        do {
+            System.out.println("\nIngrese su correo electrónico:");
+            email = sc.nextLine();
+            if (email.isEmpty()) {
+                System.out.println("El campo correo electrónico no puede estar vacío.");
+            } else if (!email.contains("@")) {
+                System.out.println("Ingrese un correo correcto valido. \n Ejemplo: example@example.com");
+            }
+        } while (email.isEmpty() || !email.contains("@"));
+        return email;
+    }
+    public static void mostrarDatosRegistrados(String nombre, String apellido, String tipoDocumento, String numDocumento,
+                                               Date fechaNacimiento, String direccion, String email, String genero,
+                                               String telefono, String pais, String dpto, String ciudad, String nivelAcademico,
+                                               String tipoSangre, String eps, String caja, String pension, String cesantias) {
+        System.out.println("\n----------------DATOS REGISTRADOS----------------");
+        System.out.printf("Nombre: %s\n", nombre);
+        System.out.printf("Apellido: %s\n", apellido);
+        System.out.printf("Tipo de documento: %s\n", tipoDocumento);
+        System.out.printf("Número de documento: %s\n", numDocumento);
+        System.out.printf("Fecha de nacimiento: %tF\n", fechaNacimiento);
+        System.out.printf("Dirección: %s\n", direccion);
+        System.out.printf("Correo electrónico: %s\n", email);
+        System.out.printf("Género: %s\n", genero);
+        System.out.printf("Teléfono: %s\n", telefono);
+        System.out.printf("País: %s\n", pais);
+        System.out.printf("Departamento: %s\n", dpto);
+        System.out.printf("Ciudad: %s\n", ciudad);
+        System.out.printf("Nivel académico: %s\n", nivelAcademico);
+        System.out.printf("Tipo de sangre: %s\n", tipoSangre);
+        System.out.printf("EPS: %s\n", eps);
+        System.out.printf("Caja de compensación: %s\n", caja);
+        System.out.printf("Fondo de pensión: %s\n", pension);
+        System.out.printf("Cesantías: %s\n", cesantias);
+    }
+
+
+
+
 }

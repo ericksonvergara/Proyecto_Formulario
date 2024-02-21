@@ -1,7 +1,6 @@
-package src.main.java.formulario;
+package src.main.java.formulario.enums;
 
 public enum Pension {
-
     COLFONDOS("Colfondos"),
     COLPENSIONES("Colpensiones"),
     OLD_MUTUAL("Old Mutual"),

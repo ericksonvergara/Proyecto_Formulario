@@ -1,4 +1,4 @@
-package src.main.java.formulario;
+package src.main.java.formulario.enums;
 
 public enum NivelAcademico {
     PRIMARIA("Primaria"),

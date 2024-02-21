@@ -1,4 +1,4 @@
-package src.main.java.formulario;
+package src.main.java.formulario.enums;
 
 public enum TipoDocumento {
     CEDULA_CIUDADANIA("Cedula de ciudadania"),
@@ -16,4 +16,5 @@ public enum TipoDocumento {
     public String getNombreDoc() {
         return nombreDoc;
     }
+
 }
